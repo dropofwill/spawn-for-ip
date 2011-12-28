@@ -4,42 +4,8 @@
 
 Install with `npm install -f -g nploy` until `node-http-proxy` fixes
 for `0.6.x`.
- 
-## Usage
 
-```
-  Usage: nploy [options]
-
-  Options:
-
-    -h, --help             output usage information
-    -V, --version          output the version number
-    -r, --range <a>..<b>   Port range [7000..7099]
-    -t, --time <seconds>   Time to idle [15]
-    -p, --port <port>      Port to listen to [80]
-    -h, --host <host>      Host to listen to [0.0.0.0]
-    -c, --config <config>  Config file [./nploy.cfg]
-    -d, --dir <dir>        Current working dir [.]
-```
-
-## nploy.cfg
-
-The config file is a simple text file in this format:
-
-```
-domain.name.com path/to/app.js
-www.domain.other.com path/to/another.js
-
-```
-
-If the domain is prefixed with `www.` it will use it and redirect
-requests there. So going to `domain.other.com/foo/bar` you will be redirected to
-`www.domain.other.com/foo/bar`. And vice-versa.
-
-
-## API
-
-### nploy.createRouter(opts) ###
+## nploy.createRouter(opts) ###
 
 Options:
 
@@ -62,7 +28,7 @@ router.setRoutes({
 , 'goo': 'b/index.js'
 })
 
-router.getRoute('foo', function(err, route) {
+router.getRoute('foo', function(err, route, child) {
   if (err) throw new Error(err)
   console.log('Use %s:%d to access "foo"', route.host, route.port)
   router.kill('foo', function(err) {
@@ -80,23 +46,18 @@ Returns a object with the following API:
  * __idletime__ - Time in seconds to wait without a call to ```getRoute``` before the process is killed
  * __options__ - Options object
 
-#### Events ####
+#### setRoute(source, target), setRoutes(map) ####
 
-This objectt is an node.js ```EventEmitter``` with the following events:
+`target` may be a path to a node.js script or an object with a `script` property (path to the script)
+and extra options passed to the [forever](http://github.com/nodejitsu/forever) module when starting
+the child process.
 
- * TBD
-
-#### setRoute(source, script), setRoutes(map) ####
-
-Update routes table with source -> script pair(s). Script may be relative path from ```opts.dir``` or
-an absolute path.
+Update routes table with source -> script pair(s).
 
 #### getRoute(source, callback) ####
 
-Returns a route to a source. Callback is ```function(err, route)``` where ```route``` can be one of:
-
- * ```{ host: HOST, port: PORT }``` - Use this host:port pair to talk to the source
- * ```{ redirect: url }``` - Redirect to the specified URL
+Returns a route to a source. Callback is ```function(err, port, child)``` where ```port``` 
+is the same port passed to the app in ```process.env.PORT```.
 
 #### clearRoute(source), clearRoutes([map]) ####
 

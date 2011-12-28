@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "request": "~2.2.9",
-    "nodeunit": "latest"
+    "nodeunit": "~0.6.4"
   },
   "scripts": {
     "test": "nodeunit test/"
