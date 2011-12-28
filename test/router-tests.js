@@ -1,7 +1,9 @@
 var testCase = require('nodeunit').testCase
 var nploy = require('../lib/nploy')
 var path = require('path')
-var apitest = require('./lib/common').apitest
+var fs = require('fs')
+var os = require('os')
+var windows = os.platform() === 'win32' ? true : false
 
 exports.router = testCase({
   setUp: function(cb) {
@@ -127,3 +129,15 @@ exports.router = testCase({
     })
   }
 })
+
+
+function apitest(test, obj, functions, props) {
+  functions.forEach(function(f) {
+    test.ok(obj[f], f + " not found")
+    test.equal(typeof obj[f], "function", f + " is not a function")
+  })
+
+  props.forEach(function(p) { 
+    test.ok(obj[p] !== null && obj[p] !== undefined)
+  })
+}
