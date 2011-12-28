@@ -42,11 +42,13 @@ router.getRoute('foo', function(err, route, child) {
 
 The `router` object has the following API.
 
+
 ### Properties ###
 
  * __range__ - Returns the port range configured in the router
  * __idletime__ - Time in seconds to wait without a call to ```getRoute``` before the process is killed
  * __options__ - Options object
+
 
 ### setRoute(source, target), setRoutes(map) ###
 
@@ -56,26 +58,32 @@ the child process.
 
 Update routes table with source -> script pair(s).
 
+
 ### getRoute(source, callback) ###
 
 Returns a route to a source. Callback is ```function(err, port, child)``` where ```port``` 
 is the same port passed to the app in ```process.env.PORT```.
 
+
 ### clearRoute(source), clearRoutes([map]) ###
 
 Deletes route(s). If ```map``` is if not provided, all routes will be deleted
+
 
 ### kill(source, callback) ###
 
 Kills the process associated with ```source```. ```callback``` is ```function(err)```.
 
+
 ### close() ###
 
 Shuts down the router. Namely, removes the idle timer.
 
+
 ### getchild(source), getpid(source) ###
 
 Returns the `forever` child of a source or it's PID.
+
 
 ## Testing ##
 
@@ -85,9 +93,11 @@ Run tests:
 npm test
 ```
 
+
 ## Licence ##
 
 MIT/X11
 
 __Author (nploy)__: George Stagas (@stagas)
+
 __Author (spinner)__: Elad Ben-Israel (@eladb)
