@@ -7,6 +7,7 @@ var options = {
 , host: "0.0.0.0"
 , config: "./nploy.cfg"
 , dir: "../test"
+, debug: true
 }
 
 var server = nploy.listen(options, function(err) {

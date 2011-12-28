@@ -8,7 +8,7 @@ var TEST_PORT = 4000
 
 exports.router = testCase({
   setUp: function(cb) {
-    this.router = nploy.createRouter({ dir: __dirname, range: [ 7000, 7999 ], output: false, debug: false })
+    this.router = nploy.createRouter({ dir: __dirname, range: [ 7000, 7999 ], output: true, debug: true })
     this.router.setRoute('a.localhost', 'a')
     this.router.setRoute('b.localhost', 'b')
     cb()
@@ -20,7 +20,7 @@ exports.router = testCase({
   }
 
 , api: function(test) {
-    var functions = [ 'setRoute', 'setRoutes', 'getRoute', 'clearRoutes', 'getpid' ]
+    var functions = [ 'setRoute', 'setRoutes', 'getRoute', 'clearRoutes', 'getchild' ]
     var props = [ 'range', 'idletime', 'options' ]
     apitest(test, this.router, functions, props)
     test.done()
@@ -105,11 +105,11 @@ exports.router = testCase({
     })
   }
 
-, getpid: function(test) {
+, getchild: function(test) {
     var self = this
-    test.ok(!self.router.getpid('a.localhost'))
+    test.ok(!self.router.getchild('a.localhost'))
     self.router.getRoute('a.localhost', function(err, route) {
-      test.ok(self.router.getpid('a.localhost'))
+      test.ok(self.router.getchild('a.localhost'))
       test.done()
     })
   }
@@ -121,10 +121,10 @@ exports.router = testCase({
     self.router.getRoute('uu', function(err, route) {
       test.ok(!err, err)
       test.ok(route)
-      test.ok(self.router.getpid('uu'))
+      test.ok(self.router.getchild('uu'))
       self.router.kill('uu', function(err) {
         test.ok(!err, err)
-        test.ok(!self.router.getpid('uu'))
+        test.ok(!self.router.getchild('uu'))
         test.done()
       })
     })
@@ -205,19 +205,19 @@ exports.proxy = testCase({
 , kill: function(test) {
     var self = this
 
-    test.ok(!self.server.router.getpid('a.localhost'), "getpid() should return null for a non started app")
+    test.ok(!self.server.router.getchild('a.localhost'), "getchild() should return null for a non started app")
 
     self.server.router.kill('a.localhost', function(err) {
       test.ok(err, "expecting an error because a is not started yet")
 
       self.req('a.localhost', function(err, res, body) {
-        test.ok(self.server.router.getpid('a.localhost'), "getpid() should return a pid")
+        test.ok(self.server.router.getchild('a.localhost'), "getchild() should return a pid")
         test.ok(res.statusCode, 200)
 
         self.server.router.kill('a.localhost', function(err) {
           test.ok(!err, err)
-          var pid = self.server.router.getpid('a.localhost')
-          test.ok(!self.server.router.getpid('a.localhost'), "getpid() should return null for a non started app")
+          var pid = self.server.router.getchild('a.localhost')
+          test.ok(!self.server.router.getchild('a.localhost'), "getchild() should return null for a non started app")
           test.done()
         })
       })
