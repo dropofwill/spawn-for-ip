@@ -6,7 +6,7 @@ var common = require('./lib/common')
 
 var TEST_PORT = 4000
 
-if (!common.hostsExistSync(['a.localhost', 'b.localhost', 'c.localhost'])) return
+if (!common.hostsExistSync(['a.localhost', 'b.localhost'])) return
 
 exports.proxy = testCase({
   setUp: function(cb) {
