@@ -30,6 +30,10 @@ var server = nploy.start(program, function() {
   console.log('listening on http://' + server.endpoint.host + ':' + server.endpoint.port + '/')
 });
 
+process.on('SIGTERM', function() {
+  server.close()
+})
+
 console.log('-----------')
 console.log('-- nploy --')
 console.log('-----------')

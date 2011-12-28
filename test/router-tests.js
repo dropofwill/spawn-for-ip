@@ -1,0 +1,129 @@
+var testCase = require('nodeunit').testCase
+var nploy = require('../lib/nploy')
+var path = require('path')
+var apitest = require('./lib/common').apitest
+
+exports.router = testCase({
+  setUp: function(cb) {
+    this.router = nploy.createRouter({ dir: __dirname, range: [ 7000, 7999 ], output: false, debug: false })
+    this.router.setRoute('a.localhost', 'a')
+    this.router.setRoute('b.localhost', 'b')
+    cb()
+  }
+
+, tearDown: function(cb) {
+    this.router.close()
+    cb()
+  }
+
+, api: function(test) {
+    var functions = [ 'setRoute', 'setRoutes', 'getRoute', 'clearRoutes', 'getchild' ]
+    var props = [ 'range', 'idletime', 'options' ]
+    apitest(test, this.router, functions, props)
+    test.done()
+  }
+
+, fields: function(test) {
+    test.deepEqual(this.router.range, [7000, 7999])
+    test.deepEqual(this.router.idletime, 15)
+    test.done()
+  }
+
+, getRouteNotFound: function(test) {
+    var self = this
+    self.router.getRoute('x.localhost', function(err, route) {
+      test.ok(err, "expecting an error")
+      test.ok(!route, "route should be null when there is an error")
+      test.done()
+    })
+  }
+
+, getRouteExists: function(test) {
+    var self = this
+    self.router.getRoute('a.localhost', function(err, route) {
+      test.ok(!err, err)
+      test.ok(route && route.host && route.port)
+      test.done()
+    })
+  }
+
+, getRouteScriptNotFound: function(test) {
+    var self = this
+    self.router.setRoute('uu', 'not-found.js')
+    self.router.getRoute('uu', function(err, route) {
+      test.ok(err, "expecting an error")
+      test.ok(!route, "no route")
+      test.done()
+    })
+  }
+
+, loadError: function(test) {
+    var self = this
+    self.router.setRoute('c.localhost', 'c')
+    self.router.getRoute('c.localhost', function(err, route) {
+      test.ok(err, "expecting an error")
+      test.ok(!route)
+      test.done()
+    })
+  }
+
+, absolutePath: function(test) {
+    var self = this
+    self.router.setRoute('xxx', path.join(__dirname, 'a', 'index.js'))
+    self.router.getRoute('xxx', function(err, route) {
+      test.ok(!err, err)
+      test.ok(route && route.host && route.port)
+      test.done()
+    })
+  }
+
+, setRoutes: function(test) {
+    var self = this
+    self.router.setRoutes({ 'x/z/123.xxx': 'a', '8899xx!': 'b' })
+    self.router.getRoute('x/z/123.xxx', function(err, route) {
+      test.ok(!err, err)
+      test.ok(route && route.host && route.port)
+
+      self.router.getRoute('8899xx!', function(err, route) {
+        test.ok(!err, err)
+        test.ok(route && route.host && route.port)
+        test.done()
+      })
+    })
+  }
+
+, clearRoutes: function(test) {
+    var self = this
+    self.router.clearRoutes()
+    self.router.getRoute('a.localhost', function(err, route) {
+      test.ok(err)
+      test.ok(!route)
+      test.done()
+    })
+  }
+
+, getchild: function(test) {
+    var self = this
+    test.ok(!self.router.getchild('a.localhost'))
+    self.router.getRoute('a.localhost', function(err, route) {
+      test.ok(self.router.getchild('a.localhost'))
+      test.done()
+    })
+  }
+
+, kill: function(test) {
+    var self = this
+    test.ok(self.router.kill)
+    self.router.setRoute('uu', 'b')
+    self.router.getRoute('uu', function(err, route) {
+      test.ok(!err, err)
+      test.ok(route)
+      test.ok(self.router.getchild('uu'))
+      self.router.kill('uu', function(err) {
+        test.ok(!err, err)
+        test.ok(!self.router.getchild('uu'))
+        test.done()
+      })
+    })
+  }
+})
