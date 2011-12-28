@@ -1,5 +1,6 @@
 {
   "author": "George Stagas <gstagas@gmail.com> (http://stagas.com)",
+  "author": "Elad Ben-Israel <eladb@microsoft.com>",
   "name": "spinner",
   "description": "Lazy spawn node apps using 'forever' and allocate ports dynamically ('nploy' fork)",
   "version": "0.1.3",
