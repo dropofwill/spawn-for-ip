@@ -4,18 +4,20 @@ var path = require('path');
 var fs = require('fs');
 var os = require('os');
 var windows = os.platform() === 'win32' ? true : false;
+var http = require('http');
+
+var verbose = false;
 
 exports.spinner = testCase({
   setUp: function(cb) {
-    this.router = nploy.createRouter({ dir: __dirname, range: [ 7000, 7999 ], output: false, debug: false });
+    this.router = nploy.createRouter({ dir: __dirname, range: [ 7000, 7999 ], output: verbose, debug: verbose });
     this.router.setRoute('a.localhost', path.join(__dirname, 'a'));
     this.router.setRoute('b.localhost', path.join(__dirname, 'b'));
     cb();
   }
 
 , tearDown: function(cb) {
-    this.router.close();
-    cb();
+    this.router.close(cb);
   }
 
 , api: function(test) {
@@ -40,13 +42,61 @@ exports.spinner = testCase({
       test.done();
     })
   }
+  
+, nextport: function(test) {
+    var self = this;
+    
+    // hog 7000 through 7010 and expect the next one to be 7011
+    var servers = [];
+    for (var p = 7000; p <= 7010; ++p) {
+      if (verbose) console.log('starting a listener on', p);
+      var server = http.createServer();
+      server.listen(p);
+      
+      server.on('error', function(err) {
+        console.error('unable to open server on port ' + p + '. probably already listening');
+      });
+      
+      servers.push({ port: p, server: server });
+    }
+    
+    self.router.nextport(function(err, port) {
+      
+      // expecting 7001 to be the next port
+      test.ok(!err, err);
+      test.equals(port, 7011);
+      
+      // release all servers
+      servers.forEach(function(s) {
+        if (s.server._handle) {
+          if (verbose) console.log('closing', s.port);
+          s.server.close();
+        }
+      });
+      
+      test.done();
+      
+    });
+  }
 
 , getRouteExists: function(test) {
     var self = this;
-    self.router.getRoute('a.localhost', function(err, port) {
+    self.router.getRoute('a.localhost', function(err, portA) {
       test.ok(!err, err);
-      test.ok(port);
-      test.done();
+      test.ok(portA);
+      
+      self.router.getRoute('b.localhost', function(err, portB) {
+        test.ok(!err, err);
+        test.ok(portA);
+        test.ok(portA !== portB);
+        
+        // now try again to access a and expect the same one
+        self.router.getRoute('a.localhost', function(err, portA2) {
+          test.ok(!err, err);
+          test.equals(portA, portA2);
+          test.done();
+        })
+      })
     })
   }
 
