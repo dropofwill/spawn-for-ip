@@ -48,23 +48,25 @@ exports.spinner = testCase({
     
     // hog 7000 through 7010 and expect the next one to be 7011
     var servers = [];
-    for (var p = 7000; p <= 7010; ++p) {
-      if (verbose) console.log('starting a listener on', p);
-      var server = http.createServer();
-      server.listen(p);
-      
-      server.on('error', function(err) {
-        console.error('unable to open server on port ' + p + '. probably already listening');
-      });
-      
-      servers.push({ port: p, server: server });
+    var max = 7010;
+    for (var p = 7000; p <= max; ++p) {
+      (function(_port) {
+          if (verbose) console.log('starting a listener on', _port);
+          var server = http.createServer();
+          server.listen(_port);
+          server.on('error', function(err) {
+            console.error('unable to open server on port ' + _port + ': ' + err);
+          });
+          
+          servers.push({ port: p, server: server });
+      })(p);
     }
     
     self.router.nextport(function(err, port) {
       
       // expecting 7001 to be the next port
       test.ok(!err, err);
-      test.equals(port, 7011);
+      test.equals(port, max + 1);
       
       // release all servers
       servers.forEach(function(s) {
@@ -230,6 +232,16 @@ exports.spinner = testCase({
         test.done();
       })
     })  
+  }
+  
+, spin: function(test) {
+    var self = this;
+    self.router.spin('11', path.join(__dirname, 'a'), function(err, port, child) {
+      test.ok(!err, err);
+      test.ok(port);
+      test.ok(child);
+      test.done();
+    });
   }
 
 });

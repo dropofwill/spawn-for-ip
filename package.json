@@ -3,7 +3,7 @@
   "author": "Elad Ben-Israel <eladb@microsoft.com>",
   "name": "spinner",
   "description": "Lazy spawn node apps using 'forever' and allocate ports dynamically ('nploy' fork)",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/anodejs/spinner.git"
