@@ -1,5 +1,7 @@
 # Spinner
 
+[![Build Status](https://secure.travis-ci.org/eladb/node-spinner.png)](http://travis-ci.org/eladb/node-spinner)
+
 Spin up node scripts bound to dynamic ports (forked from [nploy](https://github.com/stagas/nploy))
 
 ```bash
