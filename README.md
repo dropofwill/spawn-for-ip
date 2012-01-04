@@ -1,105 +1,116 @@
-# Spinner
+# spinner #
 
-[![Build Status](https://secure.travis-ci.org/anodejs/node-spinner.png)](http://travis-ci.org/anodejs/node-spinner)
-
-Spin up node scripts bound to dynamic ports (forked from [nploy](https://github.com/stagas/nploy))
+Spawns child processes with dynamic port allocation and other goodies.
 
 ```bash
 $ npm install spinner
 ```
 
-## createRouter(opts) ###
+## Sample ##
 
-Options:
+``js
+// basic.js
+var request = require('request');
+var spinner = require('../main').createSpinner();
 
- * __range__ - Port range [7000..7099]
- * __time__ - Time to idle [15]
- * __debug__ - Output logs
- * __routes__ - Hash of routing pairs (source -> target) [{}]
- * __output__ - Determines how child process output is handled:
-   * __false__ - Will not capture child process output
-   * __"console"__ - Will pipe child process stdin/stderr to console.info/console.error
-   * __"process"__ - Will pipe child process stdin/stderr to process.stdin/process.stderr
+// spawn myapp.js allocating a port in process.env.PORT
+spinner.start('myapp', function(err, port) {
+	if (err) return console.error(err);
 
-Example:
+	// send a request to the app
+	request('http://localhost:' + port, function(err, res, body) {
+		console.log('response:', body);
 
-```js
-var spinner = require('spinner');
-var router = spinner.createRouter({ port: 5000, dir: '../test' });
-
-router.setRoutes({
-  'foo': 'a/index.js'
-, 'goo': 'b/index.js'
+		// stop all child processes
+		spinner.stopall();
+	});
 });
+``
 
-router.getRoute('foo', function(err, route, child) {
-  if (err) throw new Error(err);
-  console.log('Use %s:%d to access "foo"', route.host, route.port);
-  router.kill('foo', function(err) {
-    console.log('"foo" is now dead');
-    router.close();
-  });
-});
-```
-
-The `router` object has the following API.
-
-
-### Properties ###
-
- * __range__ - Returns the port range configured in the router
- * __idletime__ - Time in seconds to wait without a call to ```getRoute``` before the process is killed
- * __options__ - Options object
-
-
-### setRoute(source, target), setRoutes(map) ###
-
-`target` may be a path to a node.js script or an object with a `script` property (path to the script)
-and extra options passed to the [forever](http://github.com/nodejitsu/forever) module when starting
-the child process.
-
-Update routes table with source -> script pair(s).
-
-
-### getRoute(source, callback) ###
-
-Returns a route to a source. Callback is ```function(err, port, child)``` where ```port``` 
-is the same port passed to the app in ```process.env.PORT```.
-
-
-### clearRoute(source), clearRoutes([map]) ###
-
-Deletes route(s). If ```map``` is if not provided, all routes will be deleted
-
-
-### kill(source, callback) ###
-
-Kills the process associated with ```source```. ```callback``` is ```function(err)```.
-
-
-### close() ###
-
-Shuts down the router. Namely, removes the idle timer.
-
-
-### getchild(source), getpid(source) ###
-
-Returns the `forever` child of a source or it's PID.
-
-
-## Testing ##
-
-Run tests:
+Output:
 
 ```bash
-npm test
+$ node basic.js 
+[myapp] starting myapp
+[myapp] looking for an available port in the range: [ 7000, 7999 ]
+[myapp] found port 7000
+[myapp] spawn /usr/local/bin/node [ 'myapp' ]
+[myapp] waiting for port 7000 to be bound
+[myapp] checking status of port 7000 tries left: 10
+[myapp] status is closed
+[myapp] checking status of port 7000 tries left: 9
+[myapp] status is open
+[myapp] port 7000 opened successfuly
+[myapp] clearing wait timeout
+response: this is a sample app
+[myapp] stopping
+[myapp] exited with status 1
+[myapp] cleaning up
 ```
 
+## API ##
 
-## Licence ##
+### createSpinner() ##
 
-MIT/X11
+Returns a spinner. Within a spinner namespace, child processes are identified by name and only 
+a single child can exists for every name.
 
-__Author (nploy)__: George Stagas (@stagas)
+This means that if I call `spinner.start('foo')` twice, only a single child will be spawned. The second call will return the same port.
 
-__Author (spinner)__: Elad Ben-Israel (@eladb)
+### spinner.start(options, callback) ###
+
+`options` include:
+
+ * __name__ - Name of child. Basically a key used to identify the child process
+ * __command__ - Program to execute (default is `process.execPath`, which is node.js)
+ * __args__ - Array of arguments to use for spawn
+ * __logger__ - Logger to use (default is `console`)
+ * __timeout__ - Timeout in seconds waiting for the process to bind to the allocated port 
+   (default is 5 seconds).
+ * __attempts__ - Number of attempts to start the process. After this, spinner will not 
+   fail on every `start` request unless a `stop` is issued.
+ * __stopTimeout___ - Timeout in seconds to wait for a child to stop before issuing a SIGKILL.
+
+`callback` is `function(err, port)` where `port` is the port number allocated for this child
+process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
+
+### spinner.start(script, callback) ###
+
+A short form for `spinner.start()` where `script` is used as the first argument to the node engine prescribed in `process.execPath` and also used as the name of the child.
+
+
+### spinner.stop(name, callback) ###
+
+Stops the child keyed `name`. `callback` is `function(err)`.
+Spinner sends `SIGTERM` and after `stopTimeout` passes, sends `SIGKILL`.
+
+### spinner.stopall(callback) ###
+
+Stops all the child processes maintained by this spinner.
+
+`callback` is `function(err)`
+
+### spinner.get(name) ###
+
+Returns information about a child process named `name`. The information includes the options
+used to start the child process and a `state` property indicating the current state of the
+child.
+
+Possible states are:
+
+ * __stopped__ - Child is stopped.
+ * __starting__ - Child is being spawned and waiting for port to be bound to.
+ * __started__ - Child is started.
+ * __stopping__ - Child is being stopped.
+ * __faulted__ - Child is faulted. That is, the alloted number of start requests failed.
+ * __restart__ - Child is being restarted.
+
+### spinner.list() ###
+
+Returns the list of child processes maintained by this spinner. The result is a hash
+keyed by the child name and contains the details from `spinner.get()`.
+
+
+## License ##
+
+MIT

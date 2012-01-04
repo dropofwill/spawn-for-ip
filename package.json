@@ -1,29 +1,36 @@
 {
-  "author": "George Stagas <gstagas@gmail.com> (http://stagas.com)",
-  "author": "Elad Ben-Israel <eladb@microsoft.com>",
-  "name": "spinner",
-  "description": "Lazy spawn node apps using 'forever' and allocate ports dynamically ('nploy' fork)",
-  "version": "0.1.5",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/anodejs/spinner.git"
-  },
-  "engines": {
-    "node": "~0.6.6"
-  },
-  "main": "./lib/spinner",
-  "dependencies": {
-    "forever": "~0.7.5",
-    "async": "~0.1.15",
-    "http-proxy": "~0.8.0",
-    "atomic": "~0.0.2",
-    "portscanner": "~0.1.2"
-  },
-  "devDependencies": {
-    "request": "~2.2.9",
-    "nodeunit": "~0.6.4"
-  },
-  "scripts": {
-    "test": "nodeunit test/"
-  }
+    "name": "spinner",
+    "description": "Spawns child processes and allocates `process.env.PORT` for each.",
+    "main": "./main",
+    "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
+    "version": "0.2.0",
+    "contributors": [ ],
+    "keywords": [
+        "spawn",
+        "child",
+        "port",
+        "allocation"
+    ],
+    "dependencies": {
+        "portscanner": "0.1.x",
+        "fsmjs": "0.1.x",
+        "async": "0.1.x",
+        "ctxobj": "0.1.x"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": "~0.6.6"
+    },
+    "devDependencies": {
+        "nodeunit": "0.6.x",
+        "logule": "0.5.x",
+        "request": "2.9.x"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/anodejs/node-spinner"
+    },
+    "scripts": {
+        "test": "nodeunit test/*.test.js"
+    }
 }
