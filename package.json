@@ -13,7 +13,7 @@
     ],
     "dependencies": {
         "portscanner": "0.1.x",
-        "fsmjs": "0.1.x",
+        "fsmjs": "0.2.x",
         "async": "0.1.x",
         "ctxobj": "0.1.x"
     },
