@@ -1,6 +1,18 @@
 # spinner #
 
-Spawns child processes with dynamic port allocation and other goodies.
+Spawns child processes with dynamic port allocation and other goodies. Sort of like [forever](https://github.com/nodejitsu/forever) but with a few more features.
+ 
+ * Allocates ports dynamically and hands them over child processes via the `PORT` 
+   environment variable
+ * Respawn processes that decided to go to bed
+ * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjd)).
+
+More to come...
+
+ * Monitor a file/directory and restart the child if changed
+ * If a child was not 'touched' for some time, automatically stop it
+ * Keep a child process running for a while when spawning a new one due 
+   to an update (tandem mode).
 
 ```bash
 $ npm install spinner
@@ -11,7 +23,7 @@ $ npm install spinner
 ``js
 // basic.js
 var request = require('request');
-var spinner = require('../main').createSpinner();
+var spinner = require('spinner').createSpinner();
 
 // spawn myapp.js allocating a port in process.env.PORT
 spinner.start('myapp', function(err, port) {
