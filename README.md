@@ -7,7 +7,7 @@ Spawns child processes with dynamic port allocation and other goodies. Sort of l
  * Allocates ports dynamically and hands them over child processes via the `PORT` 
    environment variable
  * Respawn processes that decided to go to bed
- * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjd)).
+ * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjs)).
 
 More to come...
 
