@@ -1,5 +1,7 @@
 # spinner #
 
+[![Build Status](https://secure.travis-ci.org/anodejs/node-spinner.png)](http://travis-ci.org/anodejs/node-spinner)
+
 Spawns child processes with dynamic port allocation and other goodies. Sort of like [forever](https://github.com/nodejitsu/forever) but with a few more features.
  
  * Allocates ports dynamically and hands them over child processes via the `PORT` 
@@ -126,3 +128,7 @@ keyed by the child name and contains the details from `spinner.get()`.
 ## License ##
 
 MIT
+
+## Contributors ##
+
+Originally forked from forked from [nploy](https://github.com/stagas/nploy) by George Stagas (@stagas), but since I had to work out the crazy state machine, not much code of `nploy` let. Neverthess, it's an awesome lib.
