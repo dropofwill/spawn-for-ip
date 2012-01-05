@@ -20,9 +20,7 @@ More to come...
 $ npm install spinner
 ```
 
-## Sample ##
-
-``js
+```js
 // basic.js
 var request = require('request');
 var spinner = require('spinner').createSpinner();
@@ -39,7 +37,7 @@ spinner.start('myapp', function(err, port) {
 		spinner.stopall();
 	});
 });
-``
+```
 
 Output:
 
@@ -74,50 +72,46 @@ This means that if I call `spinner.start('foo')` twice, only a single child will
 ### spinner.start(options, callback) ###
 
 ```js
-options = {
+// Name of child. Basically a key used to identify the child process
+name: 'foofoo',
 
-	// Name of child. Basically a key used to identify the child process
-	name: 'foofoo',
-	
-	// Program to execute (default is `process.execPath`, which is node.js)
-	command: process.execPath,
+// Program to execute (default is `process.execPath`, which is node.js)
+command: process.execPath,
 
-	// Array of arguments to use for spawn
-	args: [ './myapp.js' ],
+// Array of arguments to use for spawn
+args: [ './myapp.js' ],
 
-	// Environment variables for spawned process
-	env: { myenv: '1234' },
+// Environment variables for spawned process
+env: { myenv: '1234' },
 
-	// Logger to use (default is `console`)
-	logger: console,
+// Logger to use (default is `console`)
+logger: console,
 
-	// Timeout in seconds waiting for the process to bind to the
-	// allocated port (default is 5 seconds)
-	timeout: 5,
+// Timeout in seconds waiting for the process to bind to the
+// allocated port (default is 5 seconds)
+timeout: 5,
 
-	// Number of attempts to start the process. After this, spinner will not 
-	// fail on every `start` request unless a `stop` is issued (default is 3).
-	attempts: 3,
+// Number of attempts to start the process. After this, spinner will not 
+// fail on every `start` request unless a `stop` is issued (default is 3).
+attempts: 3,
 
-	// Timeout in seconds to wait for a child to stop before issuing a 
-	// SIGKILL (default is 30 sec)
-	stopTimeout: 30,
+// Timeout in seconds to wait for a child to stop before issuing a 
+// SIGKILL (default is 30 sec)
+stopTimeout: 30,
 
-	// Path of file or directory to monitor for changes. When the monitor 
-	// indicates a change, the child will be restarted. Default is null 
-	// (no monitor). file must exist when the child is first started.
-	monitor: './lazykiller.js',
+// Path of file or directory to monitor for changes. When the monitor 
+// indicates a change, the child will be restarted. Default is null 
+// (no monitor). file must exist when the child is first started.
+monitor: './lazykiller.js',
 
-	// Stream to pipe process stdout to (default is null)
-	stdout: process.stdout,
+// Stream to pipe process stdout to (default is null)
+stdout: process.stdout,
 
-	// Stream to pipe process stderr to (default is null)
-	stderr: process.stderr,
-
-};
+// Stream to pipe process stderr to (default is null)
+stderr: process.stderr,
 ```
 
-`callback` is `function(err, port)` where `port` is the port number allocated for this child process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
+The argument `callback` is `function(err, port)` where `port` is the port number allocated for this child process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
 
 ### spinner.start(script, callback) ###
 
@@ -155,6 +149,32 @@ Possible states are:
 
 Returns the list of child processes maintained by this spinner. The result is a hash
 keyed by the child name and contains the details from `spinner.get()`.
+
+### Event: 'started' ###
+
+```function(port) {}```
+
+Emitted after the child process has been started and bound to `port`. This means it can
+be accessed from now on via ```{ host: 'localhost', port: port }```.
+
+### Event: 'stopped' ###
+
+```function() {}```
+
+Emitted after the child process has been stopped.
+
+### Event: 'restarted' ###
+
+```function(port) {}```
+
+Emitted after the child process has been restarted (either due to a file change or due
+to a crash).
+
+### Event: 'error' ###
+
+```function(e) {}```
+
+Emitted when an error occured while starting the child process.
 
 
 ## License ##
