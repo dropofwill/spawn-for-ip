@@ -73,25 +73,57 @@ This means that if I call `spinner.start('foo')` twice, only a single child will
 
 ### spinner.start(options, callback) ###
 
-`options` include:
+```js
+options = {
 
- * __name__ - Name of child. Basically a key used to identify the child process
- * __command__ - Program to execute (default is `process.execPath`, which is node.js)
- * __args__ - Array of arguments to use for spawn
- * __logger__ - Logger to use (default is `console`)
- * __timeout__ - Timeout in seconds waiting for the process to bind to the allocated port 
-   (default is 5 seconds).
- * __attempts__ - Number of attempts to start the process. After this, spinner will not 
-   fail on every `start` request unless a `stop` is issued.
- * __stopTimeout___ - Timeout in seconds to wait for a child to stop before issuing a SIGKILL.
+	// Name of child. Basically a key used to identify the child process
+	name: 'foofoo',
+	
+	// Program to execute (default is `process.execPath`, which is node.js)
+	command: process.execPath,
 
-`callback` is `function(err, port)` where `port` is the port number allocated for this child
-process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
+	// Array of arguments to use for spawn
+	args: [ './myapp.js' ],
+
+	// Environment variables for spawned process
+	env: { myenv: '1234' },
+
+	// Logger to use (default is `console`)
+	logger: console,
+
+	// Timeout in seconds waiting for the process to bind to the
+	// allocated port (default is 5 seconds)
+	timeout: 5,
+
+	// Number of attempts to start the process. After this, spinner will not 
+	// fail on every `start` request unless a `stop` is issued (default is 3).
+	attempts: 3,
+
+	// Timeout in seconds to wait for a child to stop before issuing a 
+	// SIGKILL (default is 30 sec)
+	stopTimeout: 30,
+
+	// Path of file or directory to monitor for changes. When the monitor 
+	// indicates a change, the child will be restarted. Default is null 
+	// (no monitor). file must exist when the child is first started.
+	monitor: './lazykiller.js',
+
+	// Stream to pipe process stdout to (default is null)
+	stdout: process.stdout,
+
+	// Stream to pipe process stderr to (default is null)
+	stderr: process.stderr,
+
+};
+```
+
+`callback` is `function(err, port)` where `port` is the port number allocated for this child process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
 
 ### spinner.start(script, callback) ###
 
 A short form for `spinner.start()` where `script` is used as the first argument to the node engine prescribed in `process.execPath` and also used as the name of the child.
-
+Monitor is also set to point to the script, so if it changes, the child will be 
+restarted.
 
 ### spinner.stop(name, callback) ###
 

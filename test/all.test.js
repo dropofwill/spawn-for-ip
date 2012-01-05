@@ -113,7 +113,7 @@ tests.normal = function(test) {
 		test.ok(port);
 		request('http://localhost:' + port, function(err, res, body) {
 			test.ok(!err);
-			test.equals(body, 'this is a sample app');
+			test.equals(body, 'BBBBBBBBBBBBBB');
 
 			// stop it
 			self.stop('normal.js', function(err) {
@@ -298,4 +298,94 @@ tests.stress = function(test) {
 	});
 };
 
+//
+// tests the file monitor feature of the spinner - 
+// start a child, update it and see that the process is restarted
+// and the new one comes up well.
+//
+
+tests.monitor = function(test) {
+	
+	var self = this;
+	var version1 = path.join(scriptsDir, 'a.js');
+	var version2 = path.join(scriptsDir, 'normal.js');
+
+	var fileName = Math.round(Math.random() * 1000) + ".js";
+	var target = path.join(process.env.TMPDIR, fileName);
+
+	console.log(target);
+
+	//
+	// start with version1 (which is a.js)
+	//
+
+	copy(version1, target, function(err) {
+
+		//
+		// spin it
+		//
+
+		var child = self.spinner.start(target, function(err, port1) {
+			test.ok(!err, err);
+			test.ok(port1);
+
+			console.log('started on port', port1);
+
+			//
+			// send a request to the spawned app
+			//
+
+			return request('http://localhost:' + port1, function(err, res, body) {
+
+				//
+				// verify response is coming from 'AAA...'
+				//
+
+				test.equal(body, 'AAAAAAAAAAAAAAAA', "response from version 1");
+				console.log('response from version 1:', body);
+				
+				//
+				// now, update the script with version2
+				//
+
+				copy(version2, target);
+
+
+				//
+				// after the child is restarted, check that response
+				// fits version2.
+				//
+
+				child.on('restarted', function(port2) {
+					console.log('child restarted. no on port', port2);
+					request('http://localhost:' + port2, function(err, res, body) {
+
+						//
+						// check that the response now comes from 'BBBB...'
+						//
+
+						test.equals(body, 'BBBBBBBBBBBBBB', "response from version 2");
+						console.log('response from version 2:', body);
+
+						//
+						// okay, we are done. stop
+						//
+
+						self.spinner.stop(target, function(err) {
+							return test.done();
+						});
+					});
+				});
+			});
+		});
+	});
+};
+
 exports.tests = require('nodeunit').testCase(tests);
+
+function copy(source, target, callback) {
+	if (!callback) callback = function() { };
+	return fs.readFile(source, function(err, data) {
+		fs.writeFile(target, data, callback);
+	});
+}
