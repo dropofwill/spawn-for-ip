@@ -62,12 +62,16 @@ response: this is a sample app
 
 ## API ##
 
-### createSpinner() ##
+### createSpinner(globalOptions) ##
 
 Returns a spinner. Within a spinner namespace, child processes are identified by name and only 
 a single child can exists for every name.
 
 This means that if I call `spinner.start('foo')` twice, only a single child will be spawned. The second call will return the same port.
+
+`globalOptions` may contain any of the options passed along to 
+`spinner.start()` (except `name` and `args`) and used as defaults options
+for `spinner.start`.
 
 ### spinner.start(options, callback) ###
 
