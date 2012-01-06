@@ -5,7 +5,9 @@ var ctxobj = require('ctxobj');
 var async = require('async');
 var fsmjs = require('fsmjs');
 var debug = fsmjs.debug;
-var console = ctxobj.console(require('logule')).stacktop();
+var console = ctxobj.console(require('logule').suppress('trace')).stacktop();
+
+
 
 // set this to 'true' and an interactive debugger will be attached.
 var interactiveDebugger = false;
@@ -326,6 +328,7 @@ tests.monitor = function(test) {
 		//
 
 		var child = self.spinner.start(target, function(err, port1) {
+			child.logger = console;
 			test.ok(!err, err);
 			test.ok(port1);
 
