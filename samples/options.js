@@ -39,6 +39,10 @@ var options = {
 	// stream to pipe process stderr to (default is null)
 	stderr: process.stderr,
 
+	// port range to use for child processes. note that two spinner
+	// objects cannot share a port range because of a race between
+	// finding an available port and actually binding it by the app.
+	range: [ 7000, 7999 ],
 };
 
 spinner.start(options, function(err, port) {
