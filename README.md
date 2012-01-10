@@ -88,6 +88,9 @@ args: [ './myapp.js' ],
 // Environment variables for spawned process
 env: { myenv: '1234' },
 
+// working directory to spawn the app (default null)
+cwd: null,
+
 // Logger to use (default is `console`)
 logger: console,
 

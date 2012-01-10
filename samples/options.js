@@ -17,6 +17,9 @@ var options = {
 	// environment variables for spawned process
 	env: { myenv: '1234' },
 
+	// working directory to spawn the app (default null)
+	cwd: null,
+
 	// logger to use (default is `console`)
 	logger: console,
 
