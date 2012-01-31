@@ -7,7 +7,7 @@ http.createServer(function(req, res) {
 	return console.info('started on port ' + process.env.PORT);
 });
 
-// crash process after 10s
+// crash process after 5s
 var i = 5;
 setInterval(function() {
 	if (i == 0) throw new Error();
