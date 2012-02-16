@@ -116,12 +116,6 @@ stdout: process.stdout,
 
 // Stream to pipe process stderr to (default is null)
 stderr: process.stderr,
-
-
-// Port range to use for child processes. note that two spinner
-// objects cannot share a port range because of a race between
-// finding an available port and actually binding it by the app.
-range: [ 7000, 7999 ],
 ```
 
 The argument `callback` is `function(err, port)` where `port` is the port number allocated for this child process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
