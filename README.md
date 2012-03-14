@@ -8,13 +8,8 @@ Spawns child processes with dynamic port allocation and other goodies. Sort of l
    environment variable
  * Respawn processes that decided to go to bed
  * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjs)).
-
-More to come...
-
- * Monitor a file/directory and restart the child if changed
- * If a child was not 'touched' for some time, automatically stop it
- * Keep a child process running for a while when spawning a new one due 
-   to an update (tandem mode).
+ * Monitor a file and restart the child if changed
+ * If a child was not 'touched' for some time, automatically stop it (idle)
 
 ```bash
 $ npm install spinner
