@@ -8,8 +8,13 @@ Spawns child processes with dynamic port allocation and other goodies. Sort of l
    environment variable
  * Respawn processes that decided to go to bed
  * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjs)).
- * Monitor a file and restart the child if changed
- * If a child was not 'touched' for some time, automatically stop it (idle)
+
+More to come...
+
+ * Monitor a file/directory and restart the child if changed
+ * If a child was not 'touched' for some time, automatically stop it
+ * Keep a child process running for a while when spawning a new one due 
+   to an update (tandem mode).
 
 ```bash
 $ npm install spinner
@@ -22,15 +27,15 @@ var spinner = require('spinner').createSpinner();
 
 // spawn myapp.js allocating a port in process.env.PORT
 spinner.start('myapp', function(err, port) {
-	if (err) return console.error(err);
+  if (err) return console.error(err);
 
-	// send a request to the app
-	request('http://localhost:' + port, function(err, res, body) {
-		console.log('response:', body);
+  // send a request to the app
+  request('http://localhost:' + port, function(err, res, body) {
+    console.log('response:', body);
 
-		// stop all child processes
-		spinner.stopall();
-	});
+    // stop all child processes
+    spinner.stopall();
+  });
 });
 ```
 
@@ -111,6 +116,19 @@ stdout: process.stdout,
 
 // Stream to pipe process stderr to (default is null)
 stderr: process.stderr,
+
+// Idle time: if `spinner.start` is not called for this process within this time,
+// spinner will automatically stop the process. Use `-1` to disable (default is 30 minutes).
+idleTimeSec: 30 * 60,
+
+// Number of seconds allowed between unexpected restarts of a child process. If a restart
+// happens within less time, the child will be become faulted.
+restartTolerance: 60,
+
+// Number of seconds child process is not restarted when it is faulted. If child process
+// started again after this timeout expired, another attempt to spawn it will be made.
+faultTimeout: 60
+
 ```
 
 The argument `callback` is `function(err, port)` where `port` is the port number allocated for this child process and set in it's `PORT` environment variable (in node.js: `process.env.PORT`). If the child could not be started or if it did not bind to the port in the alloted `timeout`, `err` will indicate that with an `Error` object.
