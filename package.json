@@ -29,7 +29,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "http://github.com/anodejs/node-spinner"
+        "url": "http://github.com/eladb/node-spinner"
     },
     "scripts": {
         "test": "nodeunit test/*.test.js"
