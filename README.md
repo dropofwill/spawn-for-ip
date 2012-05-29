@@ -1,6 +1,6 @@
 # spinner #
 
-[![Build Status](https://secure.travis-ci.org/anodejs/node-spinner.png)](http://travis-ci.org/anodejs/node-spinner)
+[![Build Status](https://secure.travis-ci.org/eladb/node-spinner.png)](http://travis-ci.org/eladb/node-spinner)
 
 Spawns child processes with dynamic port allocation and other goodies. Sort of like [forever](https://github.com/nodejitsu/forever) but with a few more features.
  
