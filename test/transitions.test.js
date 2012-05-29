@@ -4,10 +4,7 @@ var path = require('path');
 var logule = require('logule');
 var http = require('http');
 
-function createTests(portalloc) {
-	if (!portalloc) throw new Error('portalloc is required');
-
-
+function createTests() {
 	var GOOD_APP = "require('http').createServer(function(req, res) { return res.end($BODY); }).listen(process.env.PORT);console.log('bound');";
 	var BAD_APP = "<BAD!>";
 	var TAKE_YOUR_TIME_APP = "setTimeout(function() {" + GOOD_APP + "}, $TIMEOUT);";
@@ -28,7 +25,7 @@ function createTests(portalloc) {
 			try {
 			var self = this;
 
-			var spinner = require('..').createSpinner({ logger: logule, fsmTraces: false, portalloc: portalloc });
+			var spinner = require('..').createSpinner({ logger: logule, fsmTraces: false });
 			var tmpdir = path.join(process.env.TEMP || '/tmp', Math.round(Math.random() * 1000000) + ".test");
 			fs.mkdirSync(tmpdir);
 
@@ -389,10 +386,10 @@ function createTests(portalloc) {
 		termWhileStarted: function(test) {
 			var self = this;
 			return series(test, [
-				self.write('loo.js', LATE_DEATH, { $BODY: '"m"', $DIE_AFTER: 2000 }),
+				self.write('loo.js', LATE_DEATH, { $BODY: '"m"', $DIE_AFTER: 5000 }),
 				self.start('loo.js'),
 				self.waitForSuccess('loo.js', 'm'),
-				self.delay(5000, self.waitForSuccess('loo.js', 'm')),
+				self.delay(7000, self.waitForSuccess('loo.js', 'm')),
 			]);
 		},
 
@@ -470,12 +467,4 @@ function createTests(portalloc) {
 	});
 };
 
-// -- export tests with two dimensions: static port allocation
-//    and dynamic port allocation.
-
-var staticports = require('../lib/staticports');
-var dynamicports = require('../lib/dynamicports');
-var unixdomainports = require('../lib/unixdomainports');
-exports.staticalloc = createTests(staticports());
-exports.dynamicalloc = createTests(dynamicports());
-exports.unixdomainports = createTests(unixdomainports());
+exports.unixdomainports = createTests();
