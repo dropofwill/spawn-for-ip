@@ -106,8 +106,8 @@ cwd: null,
 logger: console,
 
 // Timeout in seconds waiting for the process to bind to the
-// allocated port (default is 5 seconds)
-timeout: 5,
+// allocated port (default is 30 seconds)
+timeout: 30,
 
 // Number of attempts to start the process. After this, spinner will not 
 // fail on every `start` request unless a `stop` is issued (default is 3).
