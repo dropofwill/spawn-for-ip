@@ -3,7 +3,7 @@
     "description": "Spawns child processes and allocates `process.env.PORT` for each.",
     "main": "./main",
     "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "contributors": [ ],
     "keywords": [
         "spawn",
@@ -20,7 +20,7 @@
     },
     "license": "MIT",
     "engines": {
-        "node": "~0.6.6"
+        "node": ">=0.6.6"
     },
     "devDependencies": {
         "nodeunit": "0.6.x",
