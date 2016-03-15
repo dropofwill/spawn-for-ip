@@ -1,5 +1,5 @@
 var http = require('http');
-var spinner = require('spinner').createSpinner();
+var spinner = require('../main').createSpinner();
 
 process.chdir(__dirname);
 

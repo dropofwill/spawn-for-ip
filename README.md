@@ -1,6 +1,16 @@
-# spinner #
+# spawn-for-ip
 
-[![Build Status](https://secure.travis-ci.org/eladb/node-spinner.png)](http://travis-ci.org/eladb/node-spinner)
+Fork of `node-spinner`, which is a fork of `node-spinner`, which is a fork of `nploy`.
+
+I've let the README below pretty much as is, updating only when something changes.
+
+It's been made available on NPM:
+
+```
+npm install spawn-for-ip
+```
+
+---
 
 Spawns child processes with dynamic port allocation and other goodies. Sort of like [forever](https://github.com/nodejitsu/forever) but with a few more features.
  
